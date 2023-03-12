@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base{
+  body{
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  a{
+    color: inherit;
+  }
+}
