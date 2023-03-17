@@ -6,6 +6,9 @@
   body{
     box-sizing: border-box;
     overflow: hidden;
+    background-color: rgb(32, 32, 32);
+    min-height: 100vh;
+    min-width: 100vw;
   }
 
   a{
