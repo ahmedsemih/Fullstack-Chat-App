@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import Logo from '../../assets/brand-logo.png';
 import FormSuccess from '../../components/loading/FormSuccess';
+import Divider from './components/Divider';
 import RegisterForm from './components/RegisterForm';
 
 const Register = () => {
@@ -25,9 +26,7 @@ const Register = () => {
               <h1 className='text-3xl font-semibold text-center sm:hidden mb-10'>Create Account</h1>
               <RegisterForm setIsFormOpen={setIsFormOpen} />
               <div className='text-center mb-3'>
-                <div className='border-b border-neutral-700 relative pb-3 mt-5 mb-8 w-[90%] md:w-[80%] mx-auto flex justify-center items-center'>
-                  <p className='absolute top-0 bg-neutral-800 px-3'>{' '}or{' '}</p>
-                </div>
+                <Divider />
                 <Link className='hover:text-neutral-300 duration-200' to='/login'>Have an account? Login</Link>
               </div>
             </>
