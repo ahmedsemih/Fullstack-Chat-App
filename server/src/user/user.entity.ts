@@ -32,16 +32,17 @@ export class User extends Model {
   @Column(DataType.STRING)
   public about: string;
 
+  @Default('https://res.cloudinary.com/dtzs4c2uv/image/upload/v1666326774/noavatar_rxbrbk.png')
   @Column(DataType.STRING)
   public image: string;
 
-  @HasMany(() => User, 'friendId')
+  @Column(DataType.ARRAY(DataType.UUID))
   public friends: Array<User>;
 
-  @HasMany(() => User, 'blockedId')
+  @Column(DataType.ARRAY(DataType.UUID))
   public blocked: Array<User>;
 
-  @HasMany(() => User, 'requestId')
+  @Column(DataType.ARRAY(DataType.UUID))
   public requests: Array<User>;
 
   @BeforeCreate
