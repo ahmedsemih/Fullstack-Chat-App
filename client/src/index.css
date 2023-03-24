@@ -9,9 +9,19 @@
     background-color: rgb(32, 32, 32);
     min-height: 100vh;
     min-width: 100vw;
+    color: white;
   }
 
   a{
     color: inherit;
   }
+
+  ::-webkit-scrollbar{
+    width: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #333333;
+  }
+  
 }

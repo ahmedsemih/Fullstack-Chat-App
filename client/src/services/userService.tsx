@@ -64,12 +64,12 @@ export const setRequest = async (id: string, otherId: string, status: boolean) =
 
 // BLOCK
 export const getBlocked = async (id: string) => {
-    const { data } = await axiosWithAuth.get(`/users/${id}/blocked`);
+    const { data } = await axiosWithAuth.get(`/users/${id}/block`);
     return data;
 }
 
 export const setBlocked = async (id: string, otherId: string, status: boolean) => {
-    const { data } = await axiosWithAuth.put(`/users/${id}/blocked`, {
+    const { data } = await axiosWithAuth.put(`/users/${id}/block`, {
         otherId,
         status
     });
