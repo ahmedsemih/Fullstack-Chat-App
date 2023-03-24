@@ -21,8 +21,8 @@ type Props = {
 const RequestBox: FC<Props> = ({ request, setTrigger }) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const navigate = useNavigate();
-    const { isPending, isBlocked, addBlock, removeBlock } = useBlockStatus({ id: request.id });
-    const { addFriend } = useFriendStatus({ id: request.id });
+    const { isPending, isBlocked, addBlock, removeBlock } = useBlockStatus(request.id);
+    const { addFriend } = useFriendStatus(request.id);
 
     const handleAccept = async () => {
         const { statusCode, message } = await setRequest(user?.id!, request.id, false);
@@ -87,7 +87,7 @@ const RequestBox: FC<Props> = ({ request, setTrigger }) => {
                     src={request.image}
                     alt='request'
                     effect="blur"
-                    className="w-20 h-20 rounded-full object-cover"
+                    className="w-20 h-20 rounded-full object-cover cursor-pointer"
                 />
                 <p className="ml-3 text-xl font-semibold">{request.username}</p>
                 <div className="w-1/2 flex ml-auto">

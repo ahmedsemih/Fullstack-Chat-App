@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { checkBlock, setBlocked } from '../services/userService';
 
-const useBlockStatus = ({ id }: any) => {
+const useBlockStatus = (id: string) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const [isPending, setIsPending] = useState<boolean>(true);
     const [isBlocked, setIsBlocked] = useState<boolean>(false);
@@ -18,7 +18,7 @@ const useBlockStatus = ({ id }: any) => {
 
         fetchBlocked();
         setIsPending(false);
-    }, [user?.id]);
+    }, [user?.id, id]);
 
     const addBlock = () => {
         setBlocked(user?.id!, id, true);
