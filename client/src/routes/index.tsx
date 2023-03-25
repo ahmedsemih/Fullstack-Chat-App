@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import Create from '../pages/Create';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Profile from '../pages/Profile';
@@ -13,6 +14,7 @@ const Index = () => {
                 <Route path='/' element={<Home />} />
                 <Route path='/profile' element={<Profile/>} />
                 <Route path='/profile/edit' element={<ProfileEdit/>} />
+                <Route path='/create' element={<Create />} />
             </Route>
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />

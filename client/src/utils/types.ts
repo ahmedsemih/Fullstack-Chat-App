@@ -14,3 +14,22 @@ type User = {
   requests: string[];
   blockeds: string[];
 };
+
+type Channel = {
+  id: string;
+  participants: any[];
+  messages: string[];
+  name?: string;
+  description?: string;
+  image?: string;
+  admins?: string[];
+};
+
+type Message = {
+  id: string;
+  userId: string;
+  user?: User;
+  text?: string;
+  images?: string[];
+  createdAt: Date;
+};
