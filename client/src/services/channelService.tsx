@@ -2,7 +2,17 @@ import axiosWithAuth from "../utils/axiosWithAuth";
 
 export const getChannel = async (id: string) => {
     const { data } = await axiosWithAuth.get(`/channels/${id}`);
-    return data;
+
+    const participants:string[]=[];
+
+    await data.participants.forEach((participant:User)=>{
+        participants.push(participant.id);
+    });
+
+    return {
+        channel:data,
+        participants
+    };
 }
 
 export const getChannelsByUser = async (id: string) => {
