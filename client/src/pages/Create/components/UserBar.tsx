@@ -3,6 +3,8 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { IoMdRemoveCircleOutline, IoMdAddCircleOutline } from 'react-icons/io';
 import { getUser } from '../../../services/userService';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
 
 type Props = {
     user?: User;
@@ -16,6 +18,7 @@ type Props = {
 }
 
 const UserBar: FC<Props> = ({ user, userId, isAdded, participants, setParticipants, search, admins, setAdmins }) => {
+    const currentUser = useSelector((state:RootState)=>state.auth.user);
     const [participant, setParticipant] = useState<User | null>(user ? user : null);
 
     useEffect(() => {
@@ -66,7 +69,7 @@ const UserBar: FC<Props> = ({ user, userId, isAdded, participants, setParticipan
     return (
         <div
             className={`
-                w-full items-center bg-neutral-700 rounded-md p-3
+                w-full items-center bg-neutral-700 rounded-md p-3 my-3
                 ${(search && !isAdded) ? (participant?.username?.toLowerCase().includes(search.toLowerCase()) ? 'flex' : 'hidden') : 'flex'}
             `}
         >
@@ -98,6 +101,7 @@ const UserBar: FC<Props> = ({ user, userId, isAdded, participants, setParticipan
                         onClick={handleAddAdmin}
                         type='button'
                         className='bg-neutral-700 text-3xl hover:bg-neutral-600 p-2 rounded-md text-white'
+                        disabled={currentUser?.id === user}
                     >
                         {
                             admins?.includes(participant?.id!)

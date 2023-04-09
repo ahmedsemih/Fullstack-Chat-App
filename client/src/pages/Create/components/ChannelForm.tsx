@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast, Toaster } from 'react-hot-toast';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useSelector } from 'react-redux';
@@ -8,22 +8,16 @@ import { createChannel } from '../../../services/channelService';
 import { uploadUserImage } from '../../../services/userService';
 import Participants from './Participants';
 
-type Props = {
-    channel?: Channel;
-}
 
-const ChannelForm: FC<Props> = ({ channel }) => {
+const ChannelForm = () => {
     const user = useSelector((state: RootState) => state.auth.user);
-
     const inputRef = useRef<any>(null);
-    const [image, setImage] = useState<any>(channel?.image || null);
-    const [participants, setParticipants] = useState<string[]>(channel?.participants || []);
-    const [admins, setAdmins] = useState<string[]>(channel?.admins || []);
+    const [image, setImage] = useState<any>(null);
+    const [participants, setParticipants] = useState<string[]>([user?.id!]);
+    const [admins, setAdmins] = useState<string[]>([user?.id!]);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        setParticipants(prev => [...prev, user?.id!]);
-        setAdmins(prev => [...prev, user?.id!]);
         const secureUrl = await uploadUserImage(e.target.image.files[0]);
 
         if (!e.target.image.files || !e.target.name.value) return;
@@ -37,8 +31,8 @@ const ChannelForm: FC<Props> = ({ channel }) => {
         });
 
         if (statusCode === '201') {
-            setParticipants([]);
-            setAdmins([]);
+            setParticipants([user?.id!]);
+            setAdmins([user?.id!]);
             setImage(null);
             e.target.reset();
 
@@ -79,8 +73,8 @@ const ChannelForm: FC<Props> = ({ channel }) => {
     }
 
     return (
-        <form action='POST' className='max-w-[800px] mx-auto overflow-y-auto overflow-x-hidden' onSubmit={handleSubmit}>
-            <div className='flex items-center justify-center w-full lg:flex-row flex-col px-3 py-5 border-b border-neutral-600'>
+        <form action='POST' className='max-w-[800px] px-3 mx-auto overflow-y-auto overflow-x-hidden' onSubmit={handleSubmit}>
+            <div className='flex items-center justify-center w-full lg:flex-row flex-col py-5 border-b border-neutral-600'>
                 <LazyLoadImage
                     className={`rounded-full w-52 h-52 object-cover cursor-pointer duration-200 ${!image && 'border-2 border-neutral-600 hover:bg-neutral-700'}`}
                     src={image}
@@ -91,11 +85,25 @@ const ChannelForm: FC<Props> = ({ channel }) => {
                 <div className='md:pl-3 lg:pl-5 md:w-[350px]'>
                     <div className='flex flex-col mb-3'>
                         <label htmlFor="name">Name</label>
-                        <input defaultValue={channel?.name} className='bg-neutral-700 rounded-md p-2' placeholder='Channel Name' maxLength={50} type="text" name='name' required />
+                        <input
+                            className='bg-neutral-700 rounded-md p-2 outline-none'
+                            placeholder='Channel Name'
+                            maxLength={50}
+                            type="text"
+                            name='name'
+                            required
+                        />
                     </div>
                     <div className='flex flex-col'>
                         <label htmlFor="description">Description</label>
-                        <textarea defaultValue={channel?.description} name='description' placeholder='Channel Description' className='bg-neutral-700 p-2 resize-none' maxLength={255} cols={20} rows={5} />
+                        <textarea
+                            name='description'
+                            placeholder='Channel Description'
+                            className='bg-neutral-700 p-2 resize-none rounded-md outline-none'
+                            maxLength={255}
+                            cols={20}
+                            rows={5}
+                        />
                     </div>
                 </div>
             </div>
