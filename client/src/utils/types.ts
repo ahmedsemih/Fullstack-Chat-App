@@ -23,6 +23,8 @@ type Channel = {
   description?: string;
   image?: string;
   admins?: string[];
+  createdAt:any;
+  updatedAt:any;
 };
 
 type Message = {

@@ -1,12 +1,13 @@
 import moment from 'moment';
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useNavigate } from 'react-router-dom';
 import socket from '../../../lib/socket';
-import { getUser } from '../../../services/userService';
-import { useDispatch } from 'react-redux';
-import { setLastSeen, setSelectedChannel } from '../../../redux/features/channelSlice';
 import { useSelector } from 'react-redux';
+
+import { useDispatch } from 'react-redux';
+import { getUser } from '../../../services/userService';
+import { setLastSeen, setRefresh, setSelectedChannel } from '../../../redux/features/channelSlice';
 import { RootState } from '../../../redux/store';
 
 type Props = {
@@ -19,10 +20,9 @@ type Props = {
 const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const selectedChannel = useSelector((state: RootState) => state.channel.selectedChannel);
+  const { selectedChannel, lastSeen, refresh } = useSelector((state: RootState) => state.channel);
   const [otherUser, setOtherUser] = useState<User>();
   const [isUnseen, setIsUnseen] = useState(false);
-  const [last, setLast] = useState<Message>(lastMessage!);
 
   useEffect(() => {
     const fetchOtherUser = async () => {
@@ -31,18 +31,26 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
       setOtherUser(result.user);
     };
 
-    socket.on('chat', (data) => {
-      if (data.channelId === channel.id && data.userId !== userId) setIsUnseen(true);
-      if (channel.id === data.channelId) setLast(data);
-    });
-
+    if (moment(lastSeen).diff(moment.utc(channel.updatedAt)) < 0 && lastMessage?.userId !== userId) setIsUnseen(true);
     if (channel.participants.length === 2 && !channel.name) fetchOtherUser();
 
-  }, [channel.name, channel.participants, userId, selectedChannel, channel.id]);
+  }, [channel, userId, selectedChannel, lastSeen, lastMessage?.userId, refresh]);
+
+  useEffect(() => {
+    socket.on('chat', (data) => {
+      if (data.channelId === channel.id && data.userId !== userId) setIsUnseen(true);
+      if (data.channelId === channel.id) return dispatch(setRefresh(!refresh));
+    });
+
+    return () => {
+      socket.off('chat');
+    }
+  }, [channel.id, dispatch, userId, refresh, selectedChannel]);
 
   const handleClickChannel = () => {
+    const now = new Date().toISOString();
     dispatch(setLastSeen({
-      lastSeen: Date.now(),
+      lastSeen: now,
     }));
 
     dispatch(setSelectedChannel({
@@ -50,7 +58,6 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
     }));
 
     setIsUnseen(false);
-
     return navigate('/chat', { state: { channelId: channel.id } })
   }
 
@@ -76,8 +83,18 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
               <h5 className='font-semibold w-32 sm:w-64 md:w-40 lg:w-52 xl:w-56 h-5 overflow-hidden'>
                 {otherUser?.username}
               </h5>
-              <p className='text-neutral-400 text-sm w-32 sm:w-64 md:w-40 lg:w-52 xl:w-56 h-5 overflow-hidden'>
-                {last.text ? `${otherUser?.username}: ${last.text}` : 'You joined to this channel.'}
+              <p className='text-neutral-400 mt-1 text-sm w-32 sm:w-64 md:w-40 lg:w-52 xl:w-56 h-5 overflow-hidden'>
+                {lastMessage
+                  ?
+                  (
+                    !lastMessage.text
+                      ?
+                      `${lastMessage.images?.length} images sent.`
+                      :
+                      `${lastMessage.userId === userId ? 'You' : otherUser?.username }: ${lastMessage.text}`
+                  )
+                  :
+                  'You joined to this channel.'}
               </p>
             </div>
           </>
@@ -94,7 +111,17 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
                 {channel.name}
               </h5>
               <p className='text-neutral-400 text-sm w-32 sm:w-64 md:w-40 lg:w-52 xl:w-56 h-5 overflow-hidden'>
-                {last.text ? last.text : 'You joined to this channel.'}
+                {lastMessage?.text
+                  ?
+                  (
+                    !lastMessage.text
+                      ?
+                      `${lastMessage.images?.length} images sent.`
+                      :
+                      lastMessage.text
+                  )
+                  :
+                  'You joined to this channel.'}
               </p>
             </div>
           </>
@@ -102,11 +129,11 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
       <div className='ml-auto h-full'>
         <p className='text-neutral-400 mb-1'>
           {
-            moment(last?.createdAt).isSame(Date.now(), 'day')
+            moment(lastMessage?.createdAt).isSame(Date.now(), 'day')
               ?
-              moment(last?.createdAt).format('HH:mm')
+              moment(lastMessage?.createdAt).format('HH:mm')
               :
-              moment(last?.createdAt).format('DD MMM')
+              moment(lastMessage?.createdAt).format('DD MMM')
           }</p>
         {
           isUnseen

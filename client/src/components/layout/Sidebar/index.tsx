@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
+
 import { getChannelsByUser } from '../../../services/channelService';
 import ChannelBox from './ChannelBox';
 import Searchbar from './Searchbar';
@@ -8,7 +9,8 @@ import UserBox from './UserBox'
 import Spinner from '../../loading/Spinner';
 
 const Sidebar = () => {
-    const user = useSelector((state: RootState) => state.auth.user);
+    const { user } = useSelector((state: RootState) => state.auth);
+    const { refresh } = useSelector((state: RootState) => state.channel);
     const [channels, setChannels] = useState<Channel[]>([]);
     const [lastMessages, setLastMessages] = useState<Message[]>([]);
     const [search, setSearch] = useState<string>('');
@@ -21,7 +23,7 @@ const Sidebar = () => {
         };
 
         fetchChannels();
-    }, [user?.id]);
+    }, [user?.id, refresh]);
 
     return (
         <aside className='bg-neutral-900 border-r border-neutral-700 xl:col-span-2 md:col-span-2 min-h-screen md:min-h-fit overflow-hidden'>
