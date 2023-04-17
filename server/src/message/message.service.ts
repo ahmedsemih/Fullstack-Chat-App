@@ -21,7 +21,11 @@ export class MessageService {
 
   async getMessagesByChannel({ id }) {
     try {
-      const messages = await Message.findAll({ where: { channelId: id }, include: User});
+      const messages = await Message.findAll({
+        where: { channelId: id },
+        order: [['createdAt', 'ASC']],
+        include: User
+      });
       return messages;
     } catch (error) {
       return {

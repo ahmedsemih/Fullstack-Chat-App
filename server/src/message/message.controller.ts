@@ -13,14 +13,12 @@ export class MessageController {
     return message;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('channel/:id')
   async getMessagesByChannel(@Param('id') id: string) {
     const message = await this.messageService.getMessagesByChannel({ id });
     return message;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('')
   async createMessage(@Body() body) {
     const result = await this.messageService.addMessage(body);
@@ -30,7 +28,7 @@ export class MessageController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateMessage(@Param('id') id: string, @Body() body) {
-    const result = await this.messageService.updateMessage({ id, ...body });
+    const result = await this.messageService.updateMessage({ id, message:body });
     return result;
   }
 
