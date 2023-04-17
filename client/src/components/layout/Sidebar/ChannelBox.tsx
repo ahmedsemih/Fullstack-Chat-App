@@ -2,12 +2,11 @@ import moment from 'moment';
 import { FC, useEffect, useState } from 'react'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useNavigate } from 'react-router-dom';
-import socket from '../../../lib/socket';
 import { useSelector } from 'react-redux';
-
 import { useDispatch } from 'react-redux';
+
 import { getUser } from '../../../services/userService';
-import { setLastSeen, setRefresh, setSelectedChannel } from '../../../redux/features/channelSlice';
+import { setLastSeen, setSelectedChannel } from '../../../redux/features/channelSlice';
 import { RootState } from '../../../redux/store';
 
 type Props = {
@@ -21,6 +20,7 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { selectedChannel, lastSeen, refresh } = useSelector((state: RootState) => state.channel);
+  const [blockList, setBlockList] = useState<string[]>([]);
   const [otherUser, setOtherUser] = useState<User>();
   const [isUnseen, setIsUnseen] = useState(false);
 
@@ -31,21 +31,18 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
       setOtherUser(result.user);
     };
 
+    const fetchBlocked = async () => {
+      const result = await getUser(userId);
+      setBlockList(result.user.blocked);
+    }
+
     if (moment(lastSeen).diff(moment.utc(channel.updatedAt)) < 0 && lastMessage?.userId !== userId) setIsUnseen(true);
-    if (channel.participants.length === 2 && !channel.name) fetchOtherUser();
+    if (channel.participants.length === 2 && !channel.name) {
+      fetchOtherUser();
+      fetchBlocked();
+    }
 
   }, [channel, userId, selectedChannel, lastSeen, lastMessage?.userId, refresh]);
-
-  useEffect(() => {
-    socket.on('chat', (data) => {
-      if (data.channelId === channel.id && data.userId !== userId) setIsUnseen(true);
-      if (data.channelId === channel.id) return dispatch(setRefresh(!refresh));
-    });
-
-    return () => {
-      socket.off('chat');
-    }
-  }, [channel.id, dispatch, userId, refresh, selectedChannel]);
 
   const handleClickChannel = () => {
     const now = new Date().toISOString();
@@ -61,12 +58,22 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
     return navigate('/chat', { state: { channelId: channel.id } })
   }
 
+  if (blockList.includes(otherUser?.id!)) return null;
+
   return (
     <div
       onClick={handleClickChannel}
       className={`
             w-full items-center p-3 border-b border-neutral-700 hover:bg-neutral-800 duration-200 cursor-pointer
-            ${search ? (channel.name?.toLowerCase().includes(search.toLowerCase()) ? 'flex' : 'hidden') : 'flex'}
+            ${search
+                ?
+                (
+                  (channel.name?.toLowerCase().includes(search.toLowerCase()) || otherUser?.username.toLowerCase().includes(search.toLowerCase())) ?
+                    'flex' :
+                    'hidden'
+                )
+                : 'flex'
+            }
         `}
     >
       {
@@ -91,7 +98,7 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
                       ?
                       `${lastMessage.images?.length} images sent.`
                       :
-                      `${lastMessage.userId === userId ? 'You' : otherUser?.username }: ${lastMessage.text}`
+                      `${lastMessage.userId === userId ? 'You' : otherUser?.username}: ${lastMessage.text}`
                   )
                   :
                   'You joined to this channel.'}
