@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import sequelize from 'sequelize';
+import { Op } from 'sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 
@@ -16,6 +17,11 @@ export class UserService {
     return user;
   }
 
+  async findBySearch(search: string): Promise<any> {
+    const users = await User.findAll({ where: { username: { [Op.iLike]: `%${search}%` } } });
+    return users;
+  }
+
   async createUser({ email, username, password }: CreateUserDto): Promise<any> {
     const user = await User.create({
       email,
@@ -26,8 +32,38 @@ export class UserService {
   }
 
   async updateUser(user: any): Promise<any> {
-    const updatedUser = await User.update(user, { where: { id: user.id } });
-    return updatedUser;
+    try {
+      const updatedUser = await User.update(user, { where: { id: user.id } });
+      return updatedUser;
+    } catch {
+      return {
+        statusCode: '409',
+        message: 'This username is already in use.'
+      };
+    }
+  }
+
+  async getFriends({ id }) {
+    try {
+      const friends: User[] = [];
+
+      const friendIds = (await User.findByPk(id)).friends;
+
+      for (let i = 0; i < friendIds.length; i++) {
+        const user = await User.findByPk(friendIds[i]);
+        friends.push(user);
+      }
+
+      return {
+        statusCode: '200',
+        friends
+      };
+    } catch (error) {
+      return {
+        statusCode: '404',
+        message: 'Friends not found.'
+      };
+    }
   }
 
   async setFriend({ id, otherId, status }) {
@@ -54,6 +90,8 @@ export class UserService {
         message: 'You are already friend.'
       };
 
+    this.setRequest({ id, otherId, status: false });
+
     if (status) {
       User.update(
         { friends: sequelize.fn('array_append', sequelize.col('friends'), otherId) },
@@ -78,6 +116,28 @@ export class UserService {
       statusCode: '200',
       message: 'User updated successfully.'
     };
+  }
+
+  async getRequests({ id }) {
+    try {
+      const requests: User[] = [];
+      const requestIds = (await User.findByPk(id)).requests;
+
+      for (let i = 0; i < requestIds.length; i++) {
+        const user = await User.findByPk(requestIds[i]);
+        requests.push(user);
+      }
+
+      return {
+        statusCode: '200',
+        requests
+      };
+    } catch {
+      return {
+        statusCode: '404',
+        message: 'Requests not found.'
+      };
+    }
   }
 
   async setRequest({ id, otherId, status }) {
@@ -127,6 +187,28 @@ export class UserService {
     };
   }
 
+  async getBlocked({ id }) {
+    try {
+      const blocked: User[] = [];
+      const blockedIds = (await User.findByPk(id)).blocked;
+
+      for (let i = 0; i < blockedIds.length; i++) {
+        const user = await User.findByPk(blockedIds[i]);
+        blocked.push(user);
+      }
+
+      return {
+        statusCode: '200',
+        blocked
+      };
+    } catch {
+      return {
+        statusCode: '404',
+        message: 'Blocked not found.'
+      };
+    }
+  }
+
   async setBlocked({ id, otherId, status }) {
     const firstUser = await this.findById(id);
     const secondUser = await this.findById(otherId);
@@ -140,6 +222,8 @@ export class UserService {
         statusCode: '409',
         message: 'This user has already been blocked.'
       };
+
+    this.setRequest({ id, otherId, status: false });
 
     if (status) {
       await this.setFriend({ id, otherId, status: false });

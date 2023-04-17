@@ -37,13 +37,13 @@ export class User extends Model {
   public image: string;
 
   @Column(DataType.ARRAY(DataType.UUID))
-  public friends: Array<User>;
+  public friends: Array<string>;
 
   @Column(DataType.ARRAY(DataType.UUID))
-  public blocked: Array<User>;
+  public blocked: Array<string>;
 
   @Column(DataType.ARRAY(DataType.UUID))
-  public requests: Array<User>;
+  public requests: Array<string>;
 
   @BeforeCreate
   static async hashPassword(user: User) {
