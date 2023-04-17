@@ -10,6 +10,8 @@ import { RootState } from "../../../redux/store";
 import IconButton from "../../../components/buttons/IconButton";
 import useBlockStatus from "../../../hooks/useBlockStatus";
 import useFriendStatus from "../../../hooks/useFriendStatus";
+import { setRequest } from "../../../services/userService";
+import { toast } from "react-hot-toast";
 
 type Props = {
     details: User;
@@ -18,8 +20,32 @@ type Props = {
 const Info: FC<Props> = ({ details }) => {
     const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.auth.user);
-    const { isPending, isFriend, addFriend, removeFriend } = useFriendStatus(details?.id);
+    const { isPending, isFriend, removeFriend } = useFriendStatus(details?.id);
     const { isBlocked, addBlock, removeBlock } = useBlockStatus(details?.id);
+
+    const handleAdd = async () => {
+        const { statusCode } = await setRequest(user?.id!, details.id, true);
+
+        if (statusCode === '200') {
+            return toast.success('Request sent successfully.', {
+                duration: 3000,
+                position: 'bottom-center',
+                style: {
+                    backgroundColor: '#353535',
+                    color: '#fff'
+                }
+            });
+        }
+
+        toast.error(`You already sent a request to ${details.username}.`, {
+            duration: 3000,
+            position: 'bottom-center',
+            style: {
+                backgroundColor: '#353535',
+                color: '#fff'
+            }
+        });
+    }
 
     return (
         <div className="w-full flex justify-center py-1 xl:py-10">
@@ -28,11 +54,11 @@ const Info: FC<Props> = ({ details }) => {
                     src={details?.image}
                     alt='user-pp'
                     effect="blur"
-                    className="w-52 h-auto object-cover rounded-full mx-auto mb-5 xl:mb-0"
+                    className="w-52 h-52 object-cover rounded-full mx-auto mb-5 xl:mb-0"
                 />
                 <div className="max-w-[400px] md:pl-5">
                     <h1 className="text-2xl font-semibold my-2 xl:text-start text-center">{details?.username}</h1>
-                    <p className="min-h-[100px]">{details?.about}</p>
+                    <p className="min-h-[100px]">{details?.about ? details.about : 'No Information.'}</p>
                     <div className="flex">
                         {
                             user?.id === details?.id
@@ -62,7 +88,7 @@ const Info: FC<Props> = ({ details }) => {
                                                 isTextCanClosed
                                                 Icon={HiUserAdd}
                                                 text='Add'
-                                                handleClick={addFriend}
+                                                handleClick={handleAdd}
                                                 type='button'
                                                 isPending={isPending}
                                             />

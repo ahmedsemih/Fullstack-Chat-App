@@ -11,6 +11,7 @@ import TextInput from '../../../components/inputs/TextInput';
 import BasicButton from '../../../components/buttons/BasicButton';
 import { createAccount } from '../../../services/authService';
 import Terms from './Terms';
+import Cookies from 'js-cookie';
 
 type Props = {
   setIsFormOpen: Dispatch<SetStateAction<boolean>>;
@@ -31,6 +32,7 @@ const RegisterForm: FC<Props> = ({ setIsFormOpen }) => {
 
     if (statusCode === '201') {
       setIsFormOpen(false);
+      Cookies.remove('last_user');
       setTimeout(() => {
         return navigate('/login');
       }, 2000);

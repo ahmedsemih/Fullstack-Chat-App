@@ -49,9 +49,13 @@ const BlockedBox: FC<Props> = ({ blocked }) => {
                     src={blocked.image}
                     alt='blocked'
                     effect="blur"
-                    className="w-20 h-20 rounded-full object-cover cursor-pointer"
+                    className="w-20 h-20 rounded-full object-cover cursor-pointer md:block hidden"
                 />
-                <p className="ml-3 text-xl font-semibold">{blocked.username}</p>
+                <p
+                    onClick={() => navigate('/profile', { state: { userId: blocked.id } })}
+                    className="ml-3 text-xl font-semibold cursor-pointer">
+                    {blocked.username}
+                </p>
                 <div className="w-1/2 flex ml-auto">
                     {
                         isBlocked

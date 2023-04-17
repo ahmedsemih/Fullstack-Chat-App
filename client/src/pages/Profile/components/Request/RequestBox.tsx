@@ -87,9 +87,13 @@ const RequestBox: FC<Props> = ({ request, setTrigger }) => {
                     src={request.image}
                     alt='request'
                     effect="blur"
-                    className="w-20 h-20 rounded-full object-cover cursor-pointer"
+                    className="w-20 h-20 rounded-full object-cover cursor-pointer md:block hidden"
                 />
-                <p className="ml-3 text-xl font-semibold">{request.username}</p>
+                <p
+                    onClick={() => navigate('/profile', { state: { userId: request.id } })}
+                    className="ml-3 text-xl font-semibold cursor-pointer">
+                    {request.username}
+                </p>
                 <div className="w-1/2 flex ml-auto">
                     <IconButton isTextCanClosed Icon={BsCheck2} text='Accept' type="button" handleClick={handleAccept} />
                     <IconButton isTextCanClosed Icon={RxCross2} text='Decline' type="button" handleClick={handleDecline} />

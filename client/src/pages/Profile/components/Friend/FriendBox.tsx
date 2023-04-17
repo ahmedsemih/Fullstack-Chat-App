@@ -99,9 +99,14 @@ const FriendBox: FC<Props> = ({ friend }) => {
                     src={friend.image}
                     alt='friend'
                     effect="blur"
-                    className="w-20 h-20 rounded-full object-cover cursor-pointer"
+                    className="w-20 h-20 rounded-full object-cover cursor-pointer md:block hidden"
                 />
-                <p className="ml-3 text-xl font-semibold">{friend.username}</p>
+                <p
+                    onClick={() => navigate('/profile', { state: { userId: friend.id } })}
+                    className="ml-3 text-xl font-semibold cursor-pointer"
+                >
+                    {friend.username}
+                </p>
                 <div className="w-1/2 flex ml-auto">
                     {
                         user?.id !== friend.id
