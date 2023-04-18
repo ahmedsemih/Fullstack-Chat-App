@@ -90,9 +90,9 @@ export class UserService {
         message: 'You are already friend.'
       };
 
-    this.setRequest({ id, otherId, status: false });
-
     if (status) {
+      this.setRequest({ id, otherId, status: false });
+
       User.update(
         { friends: sequelize.fn('array_append', sequelize.col('friends'), otherId) },
         { where: { id } }
@@ -158,12 +158,12 @@ export class UserService {
       };
 
     // Check if users are friends
-    if (status && firstUser.friends && firstUser.friends.includes(otherId))
+    if (status && secondUser.friends && secondUser.friends.includes(id))
       return {
         statusCode: '406',
         message: 'You are already friends.'
       };
-    if (status && firstUser.requests && firstUser.requests.includes(otherId))
+    if (status && secondUser.requests && secondUser.requests.includes(id))
       return {
         statusCode: '409',
         message: 'You already sent a request to this user.'
@@ -171,13 +171,13 @@ export class UserService {
 
     if (status) {
       User.update(
-        { requests: sequelize.fn('array_append', sequelize.col('requests'), otherId) },
-        { where: { id } }
+        { requests: sequelize.fn('array_append', sequelize.col('requests'), id) },
+        { where: { id:otherId } }
       );
     } else {
       User.update(
-        { requests: sequelize.fn('array_remove', sequelize.col('requests'), otherId) },
-        { where: { id } }
+        { requests: sequelize.fn('array_remove', sequelize.col('requests'), id) },
+        { where: { id:otherId } }
       );
     }
 

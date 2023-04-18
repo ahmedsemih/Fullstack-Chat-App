@@ -68,7 +68,11 @@ const Box: FC<Props> = ({ user }) => {
                     effect="blur"
                     className="w-20 h-20 rounded-full object-cover cursor-pointer"
                 />
-                <p className="ml-3 text-xl font-semibold">{user.username}</p>
+                <p
+                    onClick={() => navigate('/profile', { state: { userId: user.id } })}
+                    className="ml-3 text-xl font-semibold cursor-pointer">
+                    {user.username}
+                </p>
                 {
                     user.id !== currentUser?.id
                     &&

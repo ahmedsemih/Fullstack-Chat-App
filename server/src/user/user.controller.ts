@@ -29,7 +29,6 @@ export class UserController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id/request')
   async getRequest(@Param('id') id: string) {
     const result = await this.userService.getRequests({ id });
@@ -43,7 +42,6 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id/friend')
   async getFriends(@Param('id') id: string) {
     const result = await this.userService.getFriends({ id });
@@ -57,7 +55,6 @@ export class UserController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id/block')
   async getBlocked(@Param('id') id: string) {
     const result = await this.userService.getBlocked({ id });
