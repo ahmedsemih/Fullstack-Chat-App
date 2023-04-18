@@ -14,14 +14,17 @@ const Sidebar = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const { refresh } = useSelector((state: RootState) => state.channel);
     const [channels, setChannels] = useState<Channel[]>([]);
+    const [isPending, setIsPending] = useState<boolean>(true);
     const [lastMessages, setLastMessages] = useState<Message[]>([]);
     const [search, setSearch] = useState<string>('');
 
     useEffect(() => {
+        setIsPending(true);
         const fetchChannels = async () => {
             const result = await getChannelsByUser(user?.id!);
             setChannels(result.channels);
             setLastMessages(result.lastMessages);
+            setIsPending(false);
         };
 
         fetchChannels();
@@ -37,23 +40,29 @@ const Sidebar = () => {
             <Searchbar setSearch={setSearch} />
             <div className='overflow-x-hidden overflow-y-auto max-h-[865px] pb-16'>
                 {
-                    channels.length > 0
+                    isPending
                         ?
-                        channels.map((channel, index) => {
-                            return (
-                                <ChannelBox
-                                    key={channel.id}
-                                    channel={channel}
-                                    userId={user?.id!}
-                                    lastMessage={lastMessages[index]}
-                                    search={search}
-                                />
-                            )
-                        })
-                        :
                         <div className='mt-10'>
                             <Spinner size='sm' />
                         </div>
+                        :
+                        (
+                            channels.length > 0
+                                ?
+                                channels.map((channel, index) => {
+                                    return (
+                                        <ChannelBox
+                                            key={channel.id}
+                                            channel={channel}
+                                            userId={user?.id!}
+                                            lastMessage={lastMessages[index]}
+                                            search={search}
+                                        />
+                                    )
+                                })
+                                :
+                                <p className='text-neutral-500 text-center mt-3'>Create a channel now and start chatting.</p>
+                        )
                 }
             </div>
         </aside>

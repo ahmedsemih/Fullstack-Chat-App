@@ -13,6 +13,7 @@ const Searchbar: FC<Props> = ({ setSearch }) => {
         placeholder='Search...'
         type="text"
         name='text'
+        spellCheck='false'
       />
     </div>
   )

@@ -37,7 +37,7 @@ const UserBox = () => {
         alt='user-pp'
         effect='blur'
       />
-      <p className='ml-3 text-lg'>{loggedUser?.username?.length! > 8 ? loggedUser?.username.slice(0, 8) + '...' : loggedUser?.username}</p>
+      <p className='ml-3 text-lg w-32 sm:w-64 md:w-40 lg:w-52 xl:w-56 h-7 overflow-hidden'>{loggedUser?.username}</p>
       <div className=' ml-auto cursor-pointer group'>
         <RxDotsVertical className='text-2xl' />
         <div className='absolute group-hover:block hidden text-white w-full lg:max-w-[220px] md:w-auto bg-neutral-800 border border-neutral-900 shadow-md rounded-md z-50 right-0 '>
