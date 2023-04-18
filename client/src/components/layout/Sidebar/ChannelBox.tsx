@@ -58,7 +58,7 @@ const ChannelBox: FC<Props> = ({ channel, userId, lastMessage, search }) => {
     return navigate('/chat', { state: { channelId: channel.id } })
   }
 
-  if (blockList.includes(otherUser?.id!)) return null;
+  if (blockList && blockList.includes(otherUser?.id!)) return null;
 
   return (
     <div

@@ -10,8 +10,11 @@ import PageInfo from "../../components/layout/ContentArea/PageInfo";
 import { RootState } from "../../redux/store";
 import { getChannel, updateChannel } from "../../services/channelService";
 import Participant from "./components/Participant";
+import { useDispatch } from "react-redux";
+import { setRefresh } from "../../redux/features/channelSlice";
 
 const Channel = () => {
+    const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.auth.user);
@@ -39,7 +42,8 @@ const Channel = () => {
             participants: newParticipants
         });
 
-       return navigate('/');
+        dispatch(setRefresh());
+        return navigate('/');
     }
 
     return (

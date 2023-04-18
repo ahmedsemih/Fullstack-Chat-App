@@ -18,8 +18,8 @@ export const channelSlice = createSlice({
     setSelectedChannel: (state, action: PayloadAction<any>) => {
       state.selectedChannel = action.payload.channelId;
     },
-    setRefresh: (state,action:PayloadAction<any>) => {
-      state.refresh = action.payload;
+    setRefresh: (state) => {
+      state.refresh = !state.refresh;
     }
   }
 });

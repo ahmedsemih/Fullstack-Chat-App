@@ -5,7 +5,7 @@ export const getChannel = async (id: string) => {
 
     const participants:string[]=[];
 
-    if(data.participants.length !== 2 && data.name ){
+    if(data.name){
         await data.participants.forEach((participant:User)=>{
             participants.push(participant.id);
         });

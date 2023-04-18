@@ -87,7 +87,7 @@ const FriendBox: FC<Props> = ({ friend }) => {
             ]
         });
 
-        dispatch(setRefresh(!refresh));
+        dispatch(setRefresh());
         if (statusCode === '201') return navigate('/chat', { state: { channelId: channel.id } });
     };
 

@@ -1,10 +1,13 @@
 import { Dispatch, FC, SetStateAction, useRef } from 'react'
 import { toast, Toaster } from 'react-hot-toast';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useDispatch } from 'react-redux';
+
 import BasicButton from '../../../components/buttons/BasicButton';
 import { uploadUserImage } from '../../../services/userService';
 import Participants from './Participants';
 import { updateChannel } from '../../../services/channelService';
+import { setRefresh } from '../../../redux/features/channelSlice';
 
 
 type Props = {
@@ -18,6 +21,7 @@ type Props = {
 }
 
 const EditForm: FC<Props> = ({ channel, participants, setParticipants, admins, setAdmins, image, setImage }) => {
+    const dispatch = useDispatch();
     const inputRef = useRef<any>(null);
 
     const handleSubmit = async (e: any) => {
@@ -39,6 +43,8 @@ const EditForm: FC<Props> = ({ channel, participants, setParticipants, admins, s
         });
 
         if (statusCode === '200') {
+            dispatch(setRefresh());
+
             return toast.success(message, {
                 duration: 3000,
                 position: 'bottom-center',
