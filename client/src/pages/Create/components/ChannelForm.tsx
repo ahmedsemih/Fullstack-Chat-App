@@ -2,14 +2,19 @@ import { useRef, useState } from 'react'
 import { toast, Toaster } from 'react-hot-toast';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+import Participants from './Participants';
 import BasicButton from '../../../components/buttons/BasicButton';
 import { RootState } from '../../../redux/store';
 import { createChannel } from '../../../services/channelService';
 import { uploadUserImage } from '../../../services/userService';
-import Participants from './Participants';
+import { setRefresh } from '../../../redux/features/channelSlice';
+import { NO_AVATAR_CHANNEL } from '../../../utils/constants';
 
 
 const ChannelForm = () => {
+    const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.auth.user);
     const inputRef = useRef<any>(null);
     const [image, setImage] = useState<any>(null);
@@ -18,9 +23,13 @@ const ChannelForm = () => {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const secureUrl = await uploadUserImage(e.target.image.files[0]);
 
-        if (!e.target.image.files || !e.target.name.value) return;
+        var secureUrl = NO_AVATAR_CHANNEL;
+
+        if (e.target.image.files.length === 1){
+            console.log(e.target.image.files)
+            secureUrl = await uploadUserImage(e.target.image.files[0]);
+        }
 
         const { statusCode, message } = await createChannel({
             name: e.target.name.value,
@@ -35,6 +44,8 @@ const ChannelForm = () => {
             setAdmins([user?.id!]);
             setImage(null);
             e.target.reset();
+
+            dispatch(setRefresh((prev: any) => !prev));
 
             return toast.success(message, {
                 duration: 3000,
