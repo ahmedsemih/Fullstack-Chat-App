@@ -91,7 +91,7 @@ export class UserService {
       };
 
     if (status) {
-      this.setRequest({ id, otherId, status: false });
+      this.setRequest({ id:otherId, otherId:id, status: false });
 
       User.update(
         { friends: sequelize.fn('array_append', sequelize.col('friends'), otherId) },

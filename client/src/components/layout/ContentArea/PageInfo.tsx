@@ -34,9 +34,9 @@ const PageInfo: FC<Props> = ({ image, name, participants, isChannel }) => {
                     className='w-16 h-16 rounded-full mx-3 lg:mx-5 object-cover'
                 />
             }
-            <div>
+            <div className='max-h-16 xl:w-96 lg:w-80 md:w-52 sm:w-36 w-32 overflow-hidden'>
                 <p className='hidden md:block'>{name}</p>
-                <p className='md:hidden'>{name?.length! > 15 ? name.slice(0, 15) + '...' : name}</p>
+                <p className='md:hidden'>{name}</p>
                 {
                     participants && <span className='text-sm text-neutral-300 mr-1 font-semibold'>Participants: </span>
                 }
