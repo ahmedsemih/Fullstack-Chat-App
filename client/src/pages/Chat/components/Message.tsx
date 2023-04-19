@@ -25,7 +25,7 @@ const Message: FC<Props> = ({ message }) => {
         setDeleted(true);
         setIsOpen(false);
     }
-
+    console.log(message)
     return (
         <div
             className={`

@@ -29,11 +29,13 @@ const ChatInput: FC<Props> = ({ channelId, setMessages }) => {
             text: e.target.chat.value,
             userId: user?.id,
             images: result || null,
+            user: {
+                username: user?.username,
+            },
             channelId
         }
 
         setImages(null);
-        setMessages((prev: any) => [...prev, message]);
         socket.emit('chat', message);
         e.target.chat.value = '';
         setIsPending(false);
@@ -63,11 +65,24 @@ const ChatInput: FC<Props> = ({ channelId, setMessages }) => {
                 </div>
             }
             <div className='flex justify-around items-center'>
-                <input ref={uploadInputRef} type="file" multiple onChange={handleChange} hidden accept='image/png, image/jpeg' />
+                <input
+                    ref={uploadInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleChange}
+                    hidden
+                    accept='image/png, image/jpeg'
+                />
                 <button type='button' onClick={handleUploadImage}>
                     <ImAttachment className='text-2xl hover:text-neutral-300 duration-200' />
                 </button>
-                <input readOnly={isPending} type="text" name='chat' className="bg-neutral-800 rounded-lg w-[90%] h-10 outline-none p-2" />
+                <input
+                    readOnly={isPending}
+                    spellCheck='false'
+                    type="text"
+                    name='chat'
+                    className="bg-neutral-800 rounded-lg w-[90%] h-10 outline-none p-2"
+                />
                 <button type='submit'>
                     <IoMdSend className='text-2xl hover:text-neutral-300 duration-200' />
                 </button>

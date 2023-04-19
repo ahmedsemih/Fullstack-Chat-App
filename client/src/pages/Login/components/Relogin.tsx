@@ -78,7 +78,7 @@ const Relogin: FC<Props> = ({ id, setIsFormOpen, setLastId }) => {
   return (
     <div className="w-full">
       <div className="flex flex-col items-center">
-        <LazyLoadImage className="rounded-full w-44" src={lastUser?.image} alt='user-pp' effect="blur" />
+        <LazyLoadImage className="rounded-full w-44 h-44 object-cover" src={lastUser?.image} alt='user-pp' effect="blur" />
         <h1 className="text-2xl my-5">Welcome <strong>{lastUser?.username}</strong>!</h1>
       </div>
       <form action="POST" onSubmit={handleSubmit}>
